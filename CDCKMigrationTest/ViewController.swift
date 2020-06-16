@@ -30,6 +30,18 @@ class ViewController: UIViewController {
 
         if let entity = entity {
             textField.text = entity.text
+            if var text = entity.text {
+                text += "\n"
+                entity.text = text
+            } else {
+                entity.text = ""
+            }
+
+            guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+                return
+            }
+
+            delegate.saveContext()
         }
     }
 
