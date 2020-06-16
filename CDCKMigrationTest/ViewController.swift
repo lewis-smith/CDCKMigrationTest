@@ -7,14 +7,46 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
+    @IBOutlet weak var textField: UITextField!
+
+    var entity: Entity? {
+        guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+            return nil
+        }
+
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Entity")
+        let results = try! delegate.persistentContainer.viewContext.fetch(fetchRequest)
+
+        return results.first as? Entity
+
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
+        if let entity = entity {
+            textField.text = entity.text
+        }
+    }
+
+    @IBAction func saveTapped(_ sender: UIButton) {
+        guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+
+        var ent = entity
+        if ent == nil {
+            print("Creating entity")
+            ent = Entity(context: delegate.persistentContainer.viewContext)
+        }
+        ent?.text = textField.text
+
+        delegate.saveContext()
+        print("Context saved")
+    }
 }
 
